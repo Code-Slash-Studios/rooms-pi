@@ -5,3 +5,12 @@ body {
   max-width: 38rem;
   padding: 2rem;
 }
+img {
+  max-width: 90%;
+  height: auto;
+}
+.title {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
