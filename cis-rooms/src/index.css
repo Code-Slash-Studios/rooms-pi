@@ -1,7 +1,6 @@
 body {
   margin-top: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   margin: auto;
   max-width: 38rem;
   padding: 8rem;
@@ -17,7 +16,7 @@ img {
   text-align: center;
 }
 .title h3 {
-  margin: 0; /* Remove default margin */
+  margin: 0; /* remove the default margin */
 }
 .reservations {
   display: flex;
@@ -45,4 +44,9 @@ img {
 }
 .name {
   color: #555;
+}
+.footer {
+  margin-top: 8rem;
+  text-align: center;
+  color: #333;
 }
