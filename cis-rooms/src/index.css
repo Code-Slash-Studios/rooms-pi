@@ -16,6 +16,9 @@ img {
   place-items: center;
   text-align: center;
 }
+.title h3 {
+  margin: 0; /* Remove default margin */
+}
 .reservations {
   display: flex;
   justify-content: center;
