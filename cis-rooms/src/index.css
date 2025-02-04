@@ -5,19 +5,19 @@ body {
   max-width: 38rem;
   padding: 8rem;
 }
+
 img {
-  max-width: 90%;
+  max-width: 200px;
   height: auto;
 }
 
 .title {
   display: grid;
   place-items: center;
-  text-align: center;
+  text-align: right;
   margin-bottom: 150px;
-}
-.title h3 {
-  margin: 0;
+  margin-left: auto;
+  width: fit-content;
 }
 
 .outer {
