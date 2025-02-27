@@ -1,16 +1,23 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const displayElement = document.getElementById("result"); // Ensure an element exists in HTML
-  let catFact = ""; // Variable to store the fetched data
+document.addEventListener("DOMContentLoaded", () => {
+  const displayElement = document.getElementById("result");
 
-  try {
-    const response = await fetch("https://catfact.ninja/fact");
-    const data = await response.json();
-    catFact = data.fact; // Store the fact in the variable
+  async function fetchAndUpdate() {
+    try {
+      const response = await fetch("https://catfact.ninja/fact");
 
-    // Update the HTML
-    displayElement.innerHTML = `<p>${catFact}</p>`;
-  } catch (error) {
-    console.error("Fetch error:", error);
-    displayElement.innerHTML = `<p>Error fetching data</p>`;
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      displayElement.innerHTML = `<p>${data.fact}</p>`;
+    } catch (error) {
+      console.error("Fetch error:", error);
+      displayElement.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+    }
   }
+
+  fetchAndUpdate(); // Fetch immediately on load
+
+  setInterval(fetchAndUpdate, 10000); // Update every 10 seconds
 });
