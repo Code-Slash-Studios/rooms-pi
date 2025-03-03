@@ -1,21 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Network Unavailable</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            color: red;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Unavailable</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    .status {
+      font-size: 24px;
+      color: red;
+    }
+    .ip-address {
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
     <h1>Network Unavailable</h1>
-    <p>Please check your internet connection and restart the application.</p>
+    <p id="status-message" class="status">Checking network...</p>
+    <p id="ip-address" class="ip-address">IP Address: </p>
+  </div>
+
+  <script>
+    console.log("Error file");
+
+    // Use the exposed `api` object from preload.js
+    window.api.onSetUnavailableInfo((event, data) => {
+      console.log('Data received:', data);  // For debugging
+
+      // Ensure the data is received
+      if (data) {
+        document.getElementById('status-message').textContent = `
+          ESX Online: ${data.esxOnline ? 'Working' : 'Unavailable'} | 
+          CIS Online: ${data.cisOnline ? 'Working' : 'Unavailable'}
+        `;
+        document.getElementById('ip-address').textContent = `IP Address: ${data.localIP}`;
+      }
+    });
+  </script>
 </body>
 </html>

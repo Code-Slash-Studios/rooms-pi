@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const ping = require("ping");
+const os = require("os");
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -8,9 +9,25 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  let localIP = '255.255.255.255';
+
+  // Search for the first non-internal IP address
+  for (let iface in interfaces) {
+    interfaces[iface].forEach((details) => {
+      if (details.family === 'IPv4' && !details.internal) {
+        localIP = details.address;
+        return;
+      }
+    });
+  }
+  return localIP;
+}
+
 async function checkESX() {
   try {
-    const res = await ping.promise.probe("8.8.8.8", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("1.1.1.1", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. ESX server is unavailable.");
@@ -27,7 +44,7 @@ async function checkESX() {
 
 async function checkCIS() {
   try {
-    const res = await ping.promise.probe("1.1.1.1", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("8.8.8.8", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. CIS server unavailable.");
@@ -48,6 +65,8 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
@@ -66,11 +85,23 @@ app.whenReady().then(async () => {
   const esxOnline = await checkESX();
   const cisOnline = await checkCIS();
 
-  // Load either index.html or unavailable.html depending on the result
-  const isOnline = esxOnline || cisOnline;
-  const nextPage = isOnline ? "index.html" : "unavailable.html";
+  // Get local IP address after the tests have been completed
+  const localIP = getLocalIP();
+  console.log(localIP);
 
-  mainWindow.loadFile(path.join(__dirname, nextPage)); // Update the window to load the next page after the tests are completed
+  // Send the results to the loading page
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('setLoadingResults', { esxOnline, cisOnline, localIP });
+  });
+
+  // Load either index.html or unavailable.html depending on the result
+  const isOnline = esxOnline && cisOnline;
+
+  if (isOnline) {
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'loading.html'));
+  }
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -78,6 +109,7 @@ app.whenReady().then(async () => {
     }
   });
 });
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
