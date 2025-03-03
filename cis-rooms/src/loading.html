@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading...</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+      .loading-container {
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      .message {
+        font-size: 18px;
+        color: #555;
+      }
+      .status {
+        font-size: 18px;
+        color: red;
+        margin-top: 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-container">
+      <div class="spinner" id="spinner"></div>
+      <div class="message" id="message">Initializing...</div>
+      <div id="status" class="status"></div>
+      <div id="ip-address" class="status"></div>
+    </div>
+
+    <script>
+      // Use the exposed API to listen for data from the main process
+      window.api.listenForResults((data) => {
+        console.log('Data received:', data);  // Debugging to check if data is received
+
+        // Hide the spinner and initializing message
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('message').style.display = 'none';
+
+        // Update the status message and IP address
+        if (data) {
+          const statusMessage = `
+            ESX Online: ${data.esxOnline ? 'Working' : 'Unavailable'}<br>
+            CIS Online: ${data.cisOnline ? 'Working' : 'Unavailable'}
+          `;
+          const ipAddress = `${data.localIP}`;
+
+          document.getElementById('status').innerHTML = statusMessage;
+          document.getElementById('ip-address').innerHTML = ipAddress;
+        }
+      });
+    </script>
+  </body>
+</html>
