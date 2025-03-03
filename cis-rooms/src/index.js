@@ -10,14 +10,14 @@ if (require('electron-squirrel-startup')) {
 
 async function checkESX() {
   try {
-    const res = await ping.promise.probe("155.155.155.155", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("8.8.8.8", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. ESX server is unavailable.");
       return false;
     }
 
-    console.log("Internet is working.");
+    console.log("ESX is working.");
     return true;
   } catch (error) {
     console.error("Ping failed:", error);
@@ -27,14 +27,14 @@ async function checkESX() {
 
 async function checkCIS() {
   try {
-    const res = await ping.promise.probe("155.155.155.155", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("1.1.1.1", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. CIS server unavailable.");
       return false;
     }
 
-    console.log("Internet is working.");
+    console.log("CIS is working.");
     return true;
   } catch (error) {
     console.error("Ping failed:", error);
@@ -42,7 +42,7 @@ async function checkCIS() {
   }
 }
 
-const createWindow = (htmlFile) => {
+const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -51,25 +51,30 @@ const createWindow = (htmlFile) => {
     },
   });
 
-  // Load the specified HTML file
-  mainWindow.loadFile(path.join(__dirname, htmlFile));
-};
+  // Load the initial loading screen
+  mainWindow.loadFile(path.join(__dirname, 'loading.html'));
 
+  return mainWindow;
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  const mainWindow = createWindow(); // Create the main window and initially load the loading screen
+
+  // Run both tests for ESX and CIS server
   const esxOnline = await checkESX();
   const cisOnline = await checkCIS();
 
-  // Load index.html if at least one check passes; otherwise, load unavailable.html
+  // Load either index.html or unavailable.html depending on the result
   const isOnline = esxOnline || cisOnline;
-  createWindow(isOnline ? "index.html" : "unavailable.html");
+  const nextPage = isOnline ? "index.html" : "unavailable.html";
+
+  mainWindow.loadFile(path.join(__dirname, nextPage)); // Update the window to load the next page after the tests are completed
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow(isOnline ? "index.html" : "unavailable.html");
+      createWindow();  // Optional
     }
   });
 });
