@@ -1,13 +1,48 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const ping = require("ping");
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const createWindow = () => {
-  // Create the browser window.
+async function checkESX() {
+  try {
+    const res = await ping.promise.probe("155.155.155.155", { timeout: 2, min_reply: 1 });
+
+    if (!res.alive || res.packetLoss === "100.000") {
+      console.error("No response received. ESX server is unavailable.");
+      return false;
+    }
+
+    console.log("Internet is working.");
+    return true;
+  } catch (error) {
+    console.error("Ping failed:", error);
+    return false;
+  }
+}
+
+async function checkCIS() {
+  try {
+    const res = await ping.promise.probe("155.155.155.155", { timeout: 2, min_reply: 1 });
+
+    if (!res.alive || res.packetLoss === "100.000") {
+      console.error("No response received. CIS server unavailable.");
+      return false;
+    }
+
+    console.log("Internet is working.");
+    return true;
+  } catch (error) {
+    console.error("Ping failed:", error);
+    return false;
+  }
+}
+
+const createWindow = (htmlFile) => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -16,24 +51,25 @@ const createWindow = () => {
     },
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // Load the specified HTML file
+  mainWindow.loadFile(path.join(__dirname, htmlFile));
 };
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createWindow();
+app.whenReady().then(async () => {
+  const esxOnline = await checkESX();
+  const cisOnline = await checkCIS();
 
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  app.on('activate', () => {
+  // Load index.html if at least one check passes; otherwise, load unavailable.html
+  const isOnline = esxOnline || cisOnline;
+  createWindow(isOnline ? "index.html" : "unavailable.html");
+
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWindow(isOnline ? "index.html" : "unavailable.html");
     }
   });
 });
@@ -46,6 +82,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
