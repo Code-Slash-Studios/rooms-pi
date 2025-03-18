@@ -3,6 +3,9 @@ const path = require('path');
 const ping = require("ping");
 const os = require("os");
 
+// sudo dpkg -i cis-rooms_1.0.0_amd64.deb
+// then run cis-rooms
+// should be in /usr/bin
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
