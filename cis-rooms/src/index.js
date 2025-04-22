@@ -1,11 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
 const ping = require("ping");
 const os = require("os");
-
-// sudo dpkg -i cis-rooms_1.0.0_amd64.deb
-// then run cis-rooms
-// should be in /usr/bin
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -82,6 +78,11 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.whenReady().then(async () => {
+  // Bypass SSL certificate errors by setting the certificate verification procedure
+  session.defaultSession.setCertificateVerifyProc((request, callback) => {
+    callback(0); // Always accept the certificate
+  });
+
   const mainWindow = createWindow(); // Create the main window and initially load the loading screen
 
   // Run both tests for ESX and CIS server
@@ -112,7 +113,6 @@ app.whenReady().then(async () => {
     }
   });
 });
-
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
