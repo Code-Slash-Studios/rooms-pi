@@ -11,6 +11,11 @@ img {
   height: auto;
 }
 
+.large-logo {
+  max-width: 600px; /* or whatever size you want */
+  height: auto;
+}
+
 .title {
   display: grid;
   place-items: center;
