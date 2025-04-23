@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (relevantEvents.length === 0) {
         statusHeader.textContent = "O P E N";
+        statusHeader.classList.remove("in-use");
+        statusHeader.classList.add("open");
+
         nextEventTime.textContent = "No upcoming events";
         currentEventName.textContent = "";
         eventStatus.textContent = "";
@@ -36,14 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const currentEvent = relevantEvents[0];
-
       const isOngoing = currentEvent.startDate <= now && currentEvent.endDate > now;
       const nextEvent = relevantEvents.find(event => event.startDate > now);
 
-      // Update DOM
-      statusHeader.textContent = isOngoing ? "I N   U S E" : "O P E N";
+      // Update DOM with status and colors
+      statusHeader.classList.remove("open", "in-use");
+
+      if (isOngoing) {
+        statusHeader.textContent = "I N   U S E";
+        statusHeader.classList.add("in-use");
+        eventStatus.textContent = "In Progress";
+      } else {
+        statusHeader.textContent = "O P E N";
+        statusHeader.classList.add("open");
+        eventStatus.textContent = "Upcoming Meeting";
+      }
+
       currentEventName.textContent = currentEvent.name || "Event";
-      eventStatus.textContent = isOngoing ? "In Progress" : "Upcoming Meeting";
 
       if (nextEvent) {
         nextEventTime.textContent = `NEXT EVENT: ${nextEvent.startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;

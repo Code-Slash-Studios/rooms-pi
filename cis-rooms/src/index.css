@@ -64,3 +64,11 @@ img {
   text-align: center;
   color: #333;
 }
+
+#status.open {
+  color: green;
+}
+
+#status.in-use {
+  color: red;
+}
