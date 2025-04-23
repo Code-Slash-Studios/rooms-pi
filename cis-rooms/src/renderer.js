@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statusHeader.classList.remove("open", "in-use");
 
       if (isOngoing) {
-        statusHeader.textContent = "I N   U S E";
+        statusHeader.textContent = "I N -  U S E";
         statusHeader.classList.add("in-use");
         eventStatus.textContent = "In Progress";
       } else {
