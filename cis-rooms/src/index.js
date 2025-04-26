@@ -26,7 +26,7 @@ function getLocalIP() {
 
 async function checkESX() {
   try {
-    const res = await ping.promise.probe("10.25.1.3", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("1.1.1.1", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. ESX server is unavailable.");
@@ -43,7 +43,7 @@ async function checkESX() {
 
 async function checkCIS() {
   try {
-    const res = await ping.promise.probe("10.25.1.253", { timeout: 2, min_reply: 1 });
+    const res = await ping.promise.probe("8.8.8.8", { timeout: 2, min_reply: 1 });
 
     if (!res.alive || res.packetLoss === "100.000") {
       console.error("No response received. CIS server unavailable.");
