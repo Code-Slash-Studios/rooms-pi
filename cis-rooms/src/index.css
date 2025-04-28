@@ -85,6 +85,11 @@ img {
   font-size: 3rem;
 }
 
+#event-name {
+  text-decoration: underline;
+}
+
+
 .title-logo {
   max-width: 300px !important;
   width: 100% !important;
