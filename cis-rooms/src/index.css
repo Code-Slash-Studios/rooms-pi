@@ -89,6 +89,10 @@ img {
   text-decoration: underline;
 }
 
+#next-event-time {
+  font-size: 1.2rem;  /* Adjust this value to your preference */
+}
+
 
 .title-logo {
   max-width: 300px !important;
