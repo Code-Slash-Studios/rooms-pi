@@ -16,6 +16,13 @@ img {
   height: auto;
 }
 
+.title-logo {
+  max-width: 600px;
+  width: 100%; 
+  height: auto;
+}
+
+
 .title {
   display: grid;
   place-items: center;
