@@ -25,7 +25,8 @@ img {
   margin: 0;
   padding: 0;
   margin-bottom: 75px;
-  margin-left: -100px;
+  margin-left: -300px;
+  margin-top: -50px;
 }
 
 
@@ -84,6 +85,6 @@ img {
 
 .title-logo {
   max-width: 800px !important;
-  width: 200% !important;
+  width: 175% !important;
   height: auto;
 }
