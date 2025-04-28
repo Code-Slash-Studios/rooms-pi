@@ -4,6 +4,7 @@ body {
   margin: auto;
   max-width: 38rem;
   padding: 2rem;
+  overflow-x: hidden;  /* Prevents horizontal scrolling */
   cursor: none;
 }
 
