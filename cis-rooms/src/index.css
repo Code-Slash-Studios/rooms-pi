@@ -17,13 +17,6 @@ img {
   height: auto;
 }
 
-.title-logo {
-  max-width: 600px;
-  width: 100%; 
-  height: auto;
-}
-
-
 .title {
   display: grid;
   place-items: center;
@@ -83,4 +76,10 @@ img {
 
 #status.in-use {
   color: red;
+}
+
+.title-logo {
+  max-width: 800px !important;
+  width: 200% !important;
+  height: auto;
 }
