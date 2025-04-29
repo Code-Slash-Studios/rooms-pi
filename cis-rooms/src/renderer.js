@@ -3,19 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextEventTime = document.getElementById("next-event-time");    // h2 (NEXT EVENT)
   const currentEventName = document.getElementById("event-name");      // h2 (Event name)
   const eventStatus = document.getElementById("event-status");         // h2 (In Progress / Upcoming)
-  const nextFreeTime = document.getElementById("next-free-time");      // h2 (Free at...)
+  const nextFreeTime = document.getElementById("next-free-time");      // h2 (Free at... or range)
 
   async function fetchAndUpdate() {
     try {
       const response = await fetch("https://cisrooms.stvincent.edu/pi/W211");
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       const now = new Date();
-  
+
       const relevantEvents = data
         .map(event => ({
           ...event,
@@ -24,32 +24,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }))
         .filter(event => event.endDate > now)
         .sort((a, b) => a.startDate - b.startDate);
-  
+
       if (relevantEvents.length === 0) {
         statusHeader.textContent = "O P E N";
         statusHeader.classList.remove("in-use");
         statusHeader.classList.add("open");
-  
+
         nextEventTime.textContent = "No upcoming events";
         currentEventName.textContent = "";
         eventStatus.textContent = "";
         nextFreeTime.textContent = "";
         return;
       }
-  
+
       let currentEvent = relevantEvents.find(event => event.startDate <= now && event.endDate > now);
       let isOngoing = !!currentEvent;
       let nextEvent = relevantEvents.find(event => event.startDate > now);
-  
+
       // Determine when the room is free
       let freeAtTime = null;
-  
+
       if (isOngoing) {
-        // While meetings are stacked (no gap between end and next start), continue
         let lastEndTime = currentEvent.endDate;
         for (let i = 1; i < relevantEvents.length; i++) {
           if (relevantEvents[i].startDate <= lastEndTime) {
-            // Overlapping or back-to-back meeting
             lastEndTime = new Date(Math.max(lastEndTime, relevantEvents[i].endDate));
           } else {
             break;
@@ -57,13 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         freeAtTime = lastEndTime;
       } else {
-        // No meeting in progress, free now
         freeAtTime = now;
       }
-  
-      // Update DOM with status and colors
+
+      // Update DOM
       statusHeader.classList.remove("open", "in-use");
-  
+
       if (isOngoing) {
         statusHeader.innerHTML = "I&nbsp;N&nbsp;-&nbsp;U&nbsp;S&nbsp;E";
         statusHeader.classList.add("in-use");
@@ -75,26 +72,28 @@ document.addEventListener("DOMContentLoaded", () => {
         eventStatus.textContent = "Upcoming Meeting";
         currentEventName.textContent = nextEvent?.name || "No Event";
       }
-  
+
       if (nextEvent) {
         nextEventTime.textContent = `NEXT EVENT: ${nextEvent.startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
       } else {
         nextEventTime.textContent = "No more events today";
       }
-  
-      if (freeAtTime) {
+
+      if (isOngoing) {
         nextFreeTime.textContent = `Free at ${freeAtTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+      } else if (nextEvent) {
+        const start = nextEvent.startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const end = nextEvent.endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        nextFreeTime.textContent = `${start} - ${end}`;
       } else {
         nextFreeTime.textContent = `Free until end of day`;
       }
-  
+
     } catch (error) {
       console.error("Fetch error:", error);
       currentEventName.textContent = "Error fetching data.";
     }
   }
-  
-  
 
   fetchAndUpdate();
   setInterval(fetchAndUpdate, 10000); // refresh every 10 seconds
